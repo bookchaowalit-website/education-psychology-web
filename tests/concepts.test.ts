@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { concepts, conceptsForTheme, MAX_NOTE, nextConcept, parseNotes, parseSaved, setNote, THEMES, toggleSaved } from "./concepts";
+import { concepts, conceptsForTheme, MAX_NOTE, nextConcept, parseNotes, parseSaved, setNote, THEMES, toggleSaved } from "@/lib/concepts";
 
 describe("themes", () => {
   it("lists all plus each distinct theme once", () => {
