@@ -1,13 +1,15 @@
-# Design direction — Quiet Study Archive
+# Design direction — Psychology Explorer
 
-Psychology Explorer is a reading room rather than a dashboard: warm cream,
-graphite, faded lilac, generous margins, and annotations that look like pencil
-notes. The selected concept is a single reading surface, not another tile in a
-grid.
+A reading room rather than a dashboard. Since 2026-11-19 the site uses the shared **Reader shell**
+(see `READER.md`): `app/reader-shell.css`, `components/reader-shell.tsx` and `tests/reader-shell.test.tsx`
+are copied byte for byte from content-techblog-web. Geist via `next/font` (variable on `<html>`), `--rs-*`
+tokens in light and dark.
 
-- Palette: cream `#f4f0e8`, graphite `#25232a`, lilac `#b8acc9`, moss `#80917b`.
-- Typography: soft serif for concepts, neutral sans for navigation and labels.
-- Structure: theme index, one selected concept sheet, and a reflection margin.
-- Interaction: selecting a concept updates the sheet; the prompt can be saved.
-- Responsive rule: the index becomes a compact disclosure row above the sheet.
-- Motion: a quiet page-turn fade only when the selected concept changes.
+- Structure: one h1 and lede, then the concepts as cards (definition, everyday example, reflection prompt,
+  Save button), theme chips (`aria-pressed`) with counts, a result count, then "Your margin".
+- Your margin: saved prompts with a private note each (this browser only), Remove per prompt; when empty, an
+  empty state explains what to do and links back to the concepts.
+- Site CSS in `app/globals.css` only lays out the card details and the note field.
+- Floor: text ≥ 12px, controls ≥ 44px, 4.5:1 text contrast, forced colours, no horizontal scroll at 320px,
+  footer link back to https://bookchaowalit.com/.
+- Honesty: educational information, not diagnosis or treatment (lede and footer).
