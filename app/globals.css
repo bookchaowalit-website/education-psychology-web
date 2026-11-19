@@ -19,4 +19,9 @@ html, body { margin: 0; background: var(--rs-bg); }
 /* The top bar can wrap to two rows above 640px (the shell's sticky range); scroll targets clear its real height,
    measured into --psy-top-height by components/use-top-bar-height.ts. Overrides the shell's fixed 64px. */
 html { scroll-padding-top: calc(var(--psy-top-height, 52px) + 12px); }
+/* CSS-only cover for the range where the bar wraps to two rows (641-692px measured, widened for larger text), so a
+   deep link opened before script runs, or without it, still lands below the bar. */
+@media (min-width: 641px) and (max-width: 760px) {
+  html { scroll-padding-top: calc(var(--psy-top-height, 89px) + 12px); }
+}
 .psy-saved-mark { color: var(--rs-muted); font-size: 14px; font-weight: 600; }

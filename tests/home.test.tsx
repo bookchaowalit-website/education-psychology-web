@@ -98,6 +98,27 @@ describe("home page (mounted)", () => {
     expect(css).toMatch(/html \{ scroll-padding-top: calc\(var\(--psy-top-height, 52px\) \+ 12px\); \}/);
   });
 
+  it("on a direct deep link (/#concepts) scrolls to the target again once the bar is measured", () => {
+    act(() => root.unmount());
+    window.location.hash = "#concepts";
+    const scrolled: string[] = [];
+    const original = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = function () { scrolled.push(this.id); };
+    try {
+      root = createRoot(host);
+      act(() => root.render(<Home />));
+      expect(scrolled).toEqual(["concepts"]);
+    } finally {
+      Element.prototype.scrollIntoView = original;
+      window.location.hash = "";
+    }
+  });
+
+  it("covers the two-row bar in CSS alone between 641px and 760px (before script runs, or without it)", () => {
+    const css = readFileSync(join(process.cwd(), "app/globals.css"), "utf8");
+    expect(css).toMatch(/@media \(min-width: 641px\) and \(max-width: 760px\) \{\s*html \{ scroll-padding-top: calc\(var\(--psy-top-height, 89px\) \+ 12px\); \}/);
+  });
+
   it("reads saved prompts back from this browser on load", () => {
     act(() => root.unmount());
     localStorage.setItem("psychology-saved-prompts-v1", JSON.stringify([concepts[1].id]));
