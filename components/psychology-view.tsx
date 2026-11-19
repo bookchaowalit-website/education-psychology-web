@@ -4,6 +4,7 @@ import { useState } from "react";
 import { EmptyState, Reader, ReaderFoot, ReaderHead, ReaderTop, ResultCount } from "@/components/reader-shell";
 import { concepts, conceptsForTheme, MAX_NOTE, parseNotes, parseSaved, setNote, THEMES, toggleSaved, type Notes } from "@/lib/concepts";
 import { useStoredState } from "@/lib/use-stored-state";
+import { useTopBarHeight } from "@/components/use-top-bar-height";
 
 // Psychology Explorer on the Reader shell: every concept is a card with its definition, an everyday
 // example and a reflection prompt; theme chips narrow the shelf; saved prompts and private notes live
@@ -15,6 +16,7 @@ const SOURCE = "https://github.com/bookchaowalit-website/education-psychology-we
 
 export function PsychologyView() {
   const [theme, setTheme] = useState("all");
+  useTopBarHeight();
   const [saved, setSaved] = useStoredState("psychology-saved-prompts-v1", NO_SAVED, parseSaved);
   const [notes, setNotes] = useStoredState("psychology-notes-v1", NO_NOTES, parseNotes);
   const visible = conceptsForTheme(theme);
@@ -56,9 +58,11 @@ export function PsychologyView() {
                     <div className="psy-detail">
                       <p><span className="psy-label">Everyday example</span>{concept.example}</p>
                       <p><span className="psy-label">Reflection prompt</span>{concept.prompt}</p>
+                      {/* One fixed name per concept; aria-pressed says whether it is saved, the mark shows it. */}
                       <button type="button" className="rs-plain" aria-pressed={isSaved} onClick={() => setSaved((items) => toggleSaved(items, concept.id))}>
-                        {isSaved ? "Saved to your margin ✓" : "Save this prompt"}
+                        Save this prompt<span className="rs-sr"> for {concept.name}</span>
                       </button>
+                      {isSaved ? <span className="psy-saved-mark" aria-hidden="true">✓ Saved to your margin</span> : null}
                     </div>
                   </article>
                 </li>

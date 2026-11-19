@@ -16,3 +16,7 @@ html, body { margin: 0; background: var(--rs-bg); }
 .psy-margin label { display: block; color: var(--rs-muted); font-size: 14px; }
 @media (forced-colors: active) { .psy-margin textarea { border-color: CanvasText; } }
 .rs-empty h3 { margin: 0; color: var(--rs-fg); font-size: 19px; font-weight: 600; }
+/* The top bar can wrap to two rows above 640px (the shell's sticky range); scroll targets clear its real height,
+   measured into --psy-top-height by components/use-top-bar-height.ts. Overrides the shell's fixed 64px. */
+html { scroll-padding-top: calc(var(--psy-top-height, 52px) + 12px); }
+.psy-saved-mark { color: var(--rs-muted); font-size: 14px; font-weight: 600; }

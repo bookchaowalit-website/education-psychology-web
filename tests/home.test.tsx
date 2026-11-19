@@ -1,4 +1,6 @@
 // @vitest-environment happy-dom
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { renderToString } from "react-dom/server";
@@ -51,8 +53,8 @@ describe("home page (mounted)", () => {
   });
 
   it("saves a prompt to the margin, keeps a private note, and removes it again", () => {
-    press(button("Save this prompt"));
-    expect(button("Saved to your margin").getAttribute("aria-pressed")).toBe("true");
+    press(button(`Save this prompt for ${concepts[0].name}`));
+    expect(button(`Save this prompt for ${concepts[0].name}`).getAttribute("aria-pressed")).toBe("true");
     expect($(".psy-saved h3")!.textContent).toBe(concepts[0].name);
     expect(JSON.parse(localStorage.getItem("psychology-saved-prompts-v1")!)).toEqual([concepts[0].id]);
     const area = $<HTMLTextAreaElement>(".psy-saved textarea")!;
@@ -63,6 +65,37 @@ describe("home page (mounted)", () => {
     expect(JSON.parse(localStorage.getItem("psychology-notes-v1")!)).toEqual({ [concepts[0].id]: "Noticed it after lunch" });
     press(button(`Remove saved prompt for ${concepts[0].name}`));
     expect($(".rs-empty h3")!.textContent).toBe("No prompts saved yet");
+  });
+
+  it("names each Save button after its concept, and keeps the name when pressed (aria-pressed carries the state)", () => {
+    const saveNames = () => [...host.querySelectorAll<HTMLButtonElement>(".psy-detail button")].map((b) => b.textContent);
+    const before = saveNames();
+    expect(before).toEqual(concepts.map((concept) => `Save this prompt for ${concept.name}`));
+    press(button(`Save this prompt for ${concepts[0].name}`));
+    expect(saveNames()).toEqual(before);
+    const card = host.querySelectorAll(".psy-detail")[0];
+    expect(card.querySelector("button")!.getAttribute("aria-pressed")).toBe("true");
+    expect(card.querySelector(".psy-saved-mark")?.textContent).toBe("✓ Saved to your margin");
+  });
+
+  it("keeps scroll targets clear of the top bar at its real height (it wraps to two rows on some widths)", () => {
+    act(() => root.unmount());
+    let notify: (() => void) | undefined;
+    const original = globalThis.ResizeObserver;
+    globalThis.ResizeObserver = class { constructor(cb: () => void) { notify = cb; } observe() {} disconnect() {} unobserve() {} } as unknown as typeof ResizeObserver;
+    const rect = HTMLElement.prototype.getBoundingClientRect;
+    HTMLElement.prototype.getBoundingClientRect = function () { return { height: this.classList.contains("rs-top") ? 103.4 : 0 } as DOMRect; };
+    try {
+      root = createRoot(host);
+      act(() => root.render(<Home />));
+      act(() => notify?.());
+      expect(document.documentElement.style.getPropertyValue("--psy-top-height")).toBe("104px");
+    } finally {
+      globalThis.ResizeObserver = original;
+      HTMLElement.prototype.getBoundingClientRect = rect;
+    }
+    const css = readFileSync(join(process.cwd(), "app/globals.css"), "utf8");
+    expect(css).toMatch(/html \{ scroll-padding-top: calc\(var\(--psy-top-height, 52px\) \+ 12px\); \}/);
   });
 
   it("reads saved prompts back from this browser on load", () => {
