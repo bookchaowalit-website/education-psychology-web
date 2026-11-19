@@ -44,7 +44,7 @@ export function PsychologyView() {
             </ul>
             <ResultCount shown={visible.length} total={concepts.length} noun="concept" filter={theme === "all" ? undefined : `“${theme}”`} />
           </div>
-          <ul className="rs-list" data-layout="cards">
+          <ul className="rs-list" role="list" data-layout="cards">
             {visible.map((concept) => {
               const isSaved = saved.includes(concept.id);
               return (
@@ -74,7 +74,7 @@ export function PsychologyView() {
               Press “Save this prompt” on any concept to keep it here with a private note. Saved prompts and notes stay in this browser only.
             </EmptyState>
           ) : (
-            <ul className="rs-list">
+            <ul className="rs-list" role="list">
               {savedConcepts.map((concept) => (
                 <li key={concept.id}>
                   <article className="psy-saved">
