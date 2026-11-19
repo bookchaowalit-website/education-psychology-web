@@ -114,6 +114,18 @@ describe("home page (mounted)", () => {
     }
   });
 
+  it("a malformed hash does not crash the page", () => {
+    act(() => root.unmount());
+    window.location.hash = "#%E0%A4%A";
+    try {
+      root = createRoot(host);
+      expect(() => act(() => root.render(<Home />))).not.toThrow();
+      expect(host.querySelector("h1")).not.toBeNull();
+    } finally {
+      window.location.hash = "";
+    }
+  });
+
   it("covers the two-row bar in CSS alone between 641px and 760px (before script runs, or without it)", () => {
     const css = readFileSync(join(process.cwd(), "app/globals.css"), "utf8");
     expect(css).toMatch(/@media \(min-width: 641px\) and \(max-width: 760px\) \{\s*html \{ scroll-padding-top: calc\(var\(--psy-top-height, 89px\) \+ 12px\); \}/);

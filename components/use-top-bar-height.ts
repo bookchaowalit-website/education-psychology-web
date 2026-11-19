@@ -14,7 +14,9 @@ export function useTopBarHeight() {
     const root = document.documentElement.style;
     const update = () => root.setProperty("--psy-top-height", `${Math.ceil(bar.getBoundingClientRect().height)}px`);
     update();
-    const id = decodeURIComponent(window.location.hash.slice(1));
+    // A malformed fragment (e.g. "#%E0%A4%A") makes decodeURIComponent throw: fall back to the raw value.
+    let id = window.location.hash.slice(1);
+    try { id = decodeURIComponent(id); } catch { /* keep the raw fragment */ }
     if (id) document.getElementById(id)?.scrollIntoView();
     if (typeof ResizeObserver !== "function") return () => root.removeProperty("--psy-top-height");
     const observer = new ResizeObserver(update);
